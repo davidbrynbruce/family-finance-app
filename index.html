@@ -48,6 +48,12 @@ input, select { background:#ffffff; border:1px solid var(--line); color:var(--te
 #toast { position:fixed; top:14px; left:50%; transform:translateX(-50%); background:#1f2937; color:#ffffff; border-radius:12px; padding:10px 16px; font-size:13px; display:none; z-index:30; max-width:90vw; }
 .catbtn { display:flex; width:100%; text-align:left; background:#f7f8fa; border:1px solid var(--line); color:var(--text); border-radius:10px; padding:11px 12px; margin-bottom:6px; font-size:14px; cursor:pointer; align-items:center; gap:8px; }
 .login-box { max-width:380px; margin:12vh auto 0; }
+.bubble { max-width:88%; border-radius:14px; padding:10px 13px; margin-bottom:8px; font-size:14px; line-height:1.45; white-space:pre-wrap; word-break:break-word; }
+.bubble.q { background:#dcfce7; margin-left:auto; }
+.bubble.a { background:#ffffff; border:1px solid var(--line); margin-right:auto; }
+.bubble.think { background:#ffffff; border:1px dashed var(--line); color:var(--muted); margin-right:auto; }
+#askbar { position:fixed; bottom:calc(58px + env(safe-area-inset-bottom)); left:0; right:0; background:var(--bg); border-top:1px solid var(--line); padding:8px 14px; }
+#askbar .inner { max-width:860px; margin:0 auto; display:flex; gap:8px; }
 .spacer { height:10px; }
 a { color:var(--blue); }
 .mono { font-family:ui-monospace, Menlo, Consolas, monospace; }
@@ -83,6 +89,7 @@ a { color:var(--blue); }
     <button data-tab="activity"><span class="ico">🧾</span>Activity</button>
     <button data-tab="budget"><span class="ico">🎯</span>Budget</button>
     <button data-tab="subs"><span class="ico">🔁</span>Subs</button>
+    <button data-tab="ask"><span class="ico">💬</span>Ask</button>
     <button data-tab="settings"><span class="ico">⚙️</span>Settings</button>
   </nav>
 </div>
@@ -97,7 +104,7 @@ var SB = createClient(SB_URL, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJz
 var API_URL = SB_URL + "/functions/v1/api";
 var fmt0 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 var fmt2 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
-var state = { tab: "home", month: curMonth(), cats: [], txMode: "cats", txSearch: "", txCat: "", txPage: 0, txns: [], subsShowFreq: false, subsShowHidden: false };
+var state = { tab: "home", month: curMonth(), cats: [], txMode: "cats", txSearch: "", txCat: "", txPage: 0, txns: [], subsShowFreq: false, subsShowHidden: false, askLog: [], asking: false };
 
 function el(id) { return document.getElementById(id); }
 function esc(s) { var d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; }
@@ -194,12 +201,14 @@ function render() {
   document.querySelectorAll("nav.tabs button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-tab") === state.tab); });
   el("monthnav").style.display = (state.tab === "home" || state.tab === "budget" || state.tab === "activity") ? "flex" : "none";
   el("mlabel").textContent = monthLabel(state.month);
-  var names = { home: "Home", activity: "Activity", budget: "Budget", subs: "Subscriptions", settings: "Settings" };
+  var names = { home: "Home", activity: "Activity", budget: "Budget", subs: "Subscriptions", ask: "Ask Claude", settings: "Settings" };
   el("title").textContent = names[state.tab];
+  var bar = el("askbar"); if (bar && state.tab !== "ask") bar.remove();
   if (state.tab === "home") renderHome();
   if (state.tab === "activity") renderActivity();
   if (state.tab === "budget") renderBudget();
   if (state.tab === "subs") renderSubs();
+  if (state.tab === "ask") renderAsk();
   if (state.tab === "settings") renderSettings();
 }
 function catById(id) { for (var i = 0; i < state.cats.length; i++) if (state.cats[i].id === id) return state.cats[i]; return null; }
@@ -466,6 +475,60 @@ async function renderSubs() {
   });
   var th = el("togglehidden");
   if (th) th.addEventListener("click", function (e) { e.preventDefault(); state.subsShowHidden = !state.subsShowHidden; renderSubs(); });
+}
+
+// ---------- ask claude ----------
+function renderAsk() {
+  var v = el("view");
+  var h = "";
+  if (!state.askLog.length) {
+    h += "<div class=card><b>💬 Ask anything about your money</b><p class=muted style=margin-top:6px>Claude looks at your actual transactions to answer. Try one of these:</p></div>";
+    var samples = [
+      "How much have we spent on dining out this year?",
+      "What did Apple charges cost us each month since January?",
+      "Which subscriptions grew the most this year?",
+      "Are we on track against the $23k variable budget this month?"
+    ];
+    samples.forEach(function (s) { h += "<button class=\"catbtn ask-sample\">" + esc(s) + "</button>"; });
+  }
+  state.askLog.forEach(function (m) {
+    h += "<div class=\"bubble q\">" + esc(m.q) + "</div>";
+    if (m.a === null) h += "<div class=\"bubble think\">Looking at the numbers…</div>";
+    else h += "<div class=\"bubble a\">" + esc(m.a) + "</div>";
+  });
+  h += "<div style=height:64px></div>";
+  v.innerHTML = h;
+  if (!el("askbar")) {
+    var bar = document.createElement("div");
+    bar.id = "askbar";
+    bar.innerHTML = "<div class=inner><input id=askq placeholder=\"Ask about your money...\" autocomplete=off><button class=btn id=asksend>Ask</button></div>";
+    document.body.appendChild(bar);
+  }
+  el("asksend").onclick = sendAsk;
+  el("askq").onkeydown = function (e) { if (e.key === "Enter") sendAsk(); };
+  document.querySelectorAll(".ask-sample").forEach(function (b) {
+    b.addEventListener("click", function () { el("askq").value = b.textContent; sendAsk(); });
+  });
+  window.scrollTo(0, document.body.scrollHeight);
+}
+async function sendAsk() {
+  if (state.asking) return;
+  var q = el("askq").value.trim();
+  if (!q) return;
+  el("askq").value = "";
+  state.asking = true;
+  var entry = { q: q, a: null };
+  state.askLog.push(entry);
+  renderAsk();
+  try {
+    var hist = state.askLog.slice(0, -1).slice(-3).map(function (m) { return { q: m.q, a: m.a }; });
+    var r = await api("ask", { question: q, history: hist });
+    entry.a = r.answer || "(no answer)";
+  } catch (e) {
+    entry.a = "Something went wrong: " + e.message;
+  }
+  state.asking = false;
+  if (state.tab === "ask") renderAsk();
 }
 
 // ---------- settings ----------
