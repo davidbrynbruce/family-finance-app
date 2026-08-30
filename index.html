@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bruce Family Finance</title>
+<style>
+:root { --bg:#0f1217; --card:#171c24; --line:#232a35; --text:#e5e9f0; --muted:#8a94a6; --green:#4ade80; --amber:#fbbf24; --red:#f87171; --blue:#60a5fa; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--bg); color:var(--text); font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding-bottom:76px; }
+.wrap { max-width:860px; margin:0 auto; padding:14px; }
+header.top { position:sticky; top:0; background:rgba(15,18,23,.92); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); z-index:5; }
+header.top .wrap { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; }
+h1 { font-size:17px; font-weight:700; }
+h2 { font-size:14px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.06em; margin:18px 0 8px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:10px; }
+.row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.muted { color:var(--muted); font-size:12px; }
+.big { font-size:22px; font-weight:700; }
+.grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.bar { height:8px; background:#0c0f14; border-radius:5px; overflow:hidden; margin-top:6px; }
+.bar i { display:block; height:100%; border-radius:5px; }
+.chips { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; }
+.chip { flex:0 0 auto; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:8px 12px; font-size:12px; }
+nav.tabs { position:fixed; bottom:0; left:0; right:0; background:#12161d; border-top:1px solid var(--line); display:flex; z-index:9; padding-bottom:env(safe-area-inset-bottom); }
+nav.tabs button { flex:1; background:none; border:none; color:var(--muted); font-size:11px; padding:9px 0 7px; cursor:pointer; }
+nav.tabs button.on { color:var(--green); }
+nav.tabs .ico { font-size:19px; display:block; margin-bottom:2px; }
+button.btn { background:var(--green); color:#08220f; font-weight:700; border:none; border-radius:10px; padding:11px 16px; font-size:14px; cursor:pointer; }
+button.btn.sec { background:#242c38; color:var(--text); font-weight:600; }
+button.btn.danger { background:#3a1d1d; color:var(--red); }
+button.btn.sm { padding:7px 11px; font-size:12px; border-radius:8px; }
+input, select { background:#0c0f14; border:1px solid var(--line); color:var(--text); border-radius:10px; padding:11px 12px; font-size:15px; width:100%; }
+.txn { display:flex; justify-content:space-between; align-items:center; padding:10px 2px; border-bottom:1px solid var(--line); cursor:pointer; gap:8px; }
+.txn:last-child { border-bottom:none; }
+.txn .nm { font-size:14px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:52vw; }
+.amt { font-weight:700; font-size:14px; white-space:nowrap; }
+.amt.in { color:var(--green); }
+.catchip { font-size:11px; color:var(--muted); }
+#modalbg { position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; z-index:20; }
+#modal { position:fixed; left:50%; bottom:0; transform:translateX(-50%); width:100%; max-width:560px; max-height:82vh; overflow-y:auto; background:#141922; border:1px solid var(--line); border-radius:18px 18px 0 0; padding:18px; display:none; z-index:21; }
+#toast { position:fixed; top:14px; left:50%; transform:translateX(-50%); background:#242c38; border:1px solid var(--line); color:var(--text); border-radius:12px; padding:10px 16px; font-size:13px; display:none; z-index:30; max-width:90vw; }
+.catbtn { display:flex; width:100%; text-align:left; background:#0c0f14; border:1px solid var(--line); color:var(--text); border-radius:10px; padding:11px 12px; margin-bottom:6px; font-size:14px; cursor:pointer; align-items:center; gap:8px; }
+.login-box { max-width:380px; margin:12vh auto 0; }
+.spacer { height:10px; }
+a { color:var(--blue); }
+.mono { font-family:ui-monospace, Menlo, Consolas, monospace; }
+</style>
+</head>
+<body>
+<div id="login" style="display:none">
+  <div class="login-box wrap">
+    <div class="card">
+      <div style="font-size:34px; text-align:center; margin-bottom:6px">🏦</div>
+      <h1 style="text-align:center; margin-bottom:16px">Bruce Family Finance</h1>
+      <input id="em" type="email" placeholder="Email" autocomplete="username">
+      <div class="spacer"></div>
+      <input id="pw" type="password" placeholder="Password" autocomplete="current-password">
+      <div class="spacer"></div>
+      <button class="btn" style="width:100%" id="loginbtn">Sign in</button>
+      <p id="loginerr" class="muted" style="color:var(--red); margin-top:10px; text-align:center"></p>
+    </div>
+  </div>
+</div>
+<div id="shell" style="display:none">
+  <header class="top"><div class="wrap">
+    <h1 id="title">Home</h1>
+    <div id="monthnav" class="row" style="gap:6px">
+      <button class="btn sec sm" data-act="mprev">‹</button>
+      <span id="mlabel" style="font-size:13px; font-weight:700; min-width:76px; text-align:center"></span>
+      <button class="btn sec sm" data-act="mnext">›</button>
+    </div>
+  </div></header>
+  <main class="wrap" id="view"></main>
+  <nav class="tabs">
+    <button data-tab="home"><span class="ico">🏠</span>Home</button>
+    <button data-tab="activity"><span class="ico">🧾</span>Activity</button>
+    <button data-tab="budget"><span class="ico">🎯</span>Budget</button>
+    <button data-tab="subs"><span class="ico">🔁</span>Subs</button>
+    <button data-tab="settings"><span class="ico">⚙️</span>Settings</button>
+  </nav>
+</div>
+<div id="modalbg"></div>
+<div id="modal"></div>
+<div id="toast"></div>
+<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+var SB_URL = "https://zijtjfdpvkfdxflutmpc.supabase.co";
+var SB = createClient(SB_URL, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InppanRqZmRwdmtmZHhmbHV0bXBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxMTE1MjEsImV4cCI6MjEwMzY4NzUyMX0.a80UQAITcOc2cNjhEuTeqb1JbnzpD4BmrlhzwVOrx-4");
+var API_URL = SB_URL + "/functions/v1/api";
+var fmt0 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+var fmt2 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+var state = { tab: "home", month: curMonth(), cats: [], txSearch: "", txCat: "", txPage: 0, txns: [], subsShowHidden: false };
+
+function el(id) { return document.getElementById(id); }
+function esc(s) { var d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; }
+function pad2(n) { return (n < 10 ? "0" : "") + n; }
+function curMonth() { var d = new Date(); return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-01"; }
+function shiftMonth(m, delta) { var d = new Date(parseInt(m.slice(0, 4), 10), parseInt(m.slice(5, 7), 10) - 1 + delta, 1); return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-01"; }
+function monthLabel(m) { var n = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]; return n[parseInt(m.slice(5, 7), 10) - 1] + " " + m.slice(0, 4); }
+function toast(msg) { var t = el("toast"); t.textContent = msg; t.style.display = "block"; clearTimeout(t._h); t._h = setTimeout(function () { t.style.display = "none"; }, 3500); }
+function openModal(h) { el("modal").innerHTML = h; el("modal").style.display = "block"; el("modalbg").style.display = "block"; }
+function closeModal() { el("modal").style.display = "none"; el("modalbg").style.display = "none"; }
+el("modalbg").addEventListener("click", closeModal);
+function barHtml(spent, target) {
+  if (!target) return "";
+  var p = Math.min(100, Math.round(spent / target * 100));
+  var c = p <= 80 ? "var(--green)" : (p <= 100 ? "var(--amber)" : "var(--red)");
+  if (spent > target) c = "var(--red)";
+  return "<div class=bar><i style=\"width:" + p + "%;background:" + c + "\"></i></div>";
+}
+async function api(action, payload) {
+  var sess = (await SB.auth.getSession()).data.session;
+  var res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + (sess ? sess.access_token : "") }, body: JSON.stringify(Object.assign({ action: action }, payload || {})) });
+  var j = await res.json().catch(function () { return {}; });
+  if (!res.ok) throw new Error(j.error || ("HTTP " + res.status));
+  return j;
+}
+
+// ---------- auth ----------
+el("loginbtn").addEventListener("click", doLogin);
+el("pw").addEventListener("keydown", function (e) { if (e.key === "Enter") doLogin(); });
+async function doLogin() {
+  el("loginerr").textContent = "";
+  var r = await SB.auth.signInWithPassword({ email: el("em").value.trim(), password: el("pw").value });
+  if (r.error) { el("loginerr").textContent = r.error.message; return; }
+  boot();
+}
+async function boot() {
+  var sess = (await SB.auth.getSession()).data.session;
+  if (!sess) { el("login").style.display = "block"; el("shell").style.display = "none"; return; }
+  el("login").style.display = "none"; el("shell").style.display = "block";
+  var c = await SB.from("categories").select("*").order("sort");
+  state.cats = c.data || [];
+  render();
+  maybeResumeOauth();
+}
+
+// ---------- plaid link ----------
+function maybeResumeOauth() {
+  if (window.location.search.indexOf("oauth_state_id") >= 0) {
+    var t = sessionStorage.getItem("plaid_link_token");
+    if (t) openLink(t, window.location.href);
+  }
+}
+async function connectBank() {
+  try {
+    var r = await api("create_link_token", {});
+    if (r.warning) toast("Heads up: Chase needs the redirect URL registered in Plaid dashboard first.");
+    sessionStorage.setItem("plaid_link_token", r.link_token);
+    openLink(r.link_token, null);
+  } catch (e) { toast("Could not start: " + e.message); }
+}
+function openLink(token, redirectUri) {
+  var cfg = {
+    token: token,
+    onSuccess: function (pt, meta) { finishLink(pt, meta); },
+    onExit: function (err) { if (err) toast("Bank link closed: " + (err.display_message || err.error_code || "")); }
+  };
+  if (redirectUri) cfg.receivedRedirectUri = redirectUri;
+  var h = Plaid.create(cfg);
+  h.open();
+}
+async function finishLink(pt, meta) {
+  try {
+    toast("Linking account and running first sync (can take a minute)...");
+    var inst = meta && meta.institution ? meta.institution.name : null;
+    var r = await api("exchange_public_token", { public_token: pt, institution_name: inst });
+    toast("Connected! Pulled " + ((r.result && r.result.added) || 0) + " transactions.");
+    window.history.replaceState({}, "", window.location.pathname);
+    render();
+  } catch (e) { toast("Link failed: " + e.message); }
+}
+
+// ---------- render ----------
+document.querySelectorAll("nav.tabs button").forEach(function (b) {
+  b.addEventListener("click", function () { state.tab = b.getAttribute("data-tab"); render(); });
+});
+document.addEventListener("click", function (e) {
+  var t = e.target.closest("[data-act]");
+  if (!t) return;
+  var act = t.getAttribute("data-act");
+  if (act === "mprev") { state.month = shiftMonth(state.month, -1); render(); }
+  if (act === "mnext") { state.month = shiftMonth(state.month, 1); render(); }
+});
+function render() {
+  document.querySelectorAll("nav.tabs button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-tab") === state.tab); });
+  el("monthnav").style.display = (state.tab === "home" || state.tab === "budget" || state.tab === "activity") ? "flex" : "none";
+  el("mlabel").textContent = monthLabel(state.month);
+  var names = { home: "Home", activity: "Activity", budget: "Budget", subs: "Subscriptions", settings: "Settings" };
+  el("title").textContent = names[state.tab];
+  if (state.tab === "home") renderHome();
+  if (state.tab === "activity") renderActivity();
+  if (state.tab === "budget") renderBudget();
+  if (state.tab === "subs") renderSubs();
+  if (state.tab === "settings") renderSettings();
+}
+function catById(id) { for (var i = 0; i < state.cats.length; i++) if (state.cats[i].id === id) return state.cats[i]; return null; }
+
+// ---------- home ----------
+async function renderHome() {
+  var m = state.month, nm = shiftMonth(m, 1);
+  var v = el("view");
+  v.innerHTML = "<p class=muted>Loading...</p>";
+  var mcfQ = await SB.from("monthly_cash_flow").select("*").order("month");
+  var cmQ = await SB.from("category_month").select("*").eq("month", m);
+  var acctQ = await SB.from("accounts").select("*").eq("hidden", false);
+  var unQ = await SB.from("transactions").select("id", { count: "exact", head: true }).is("category_id", null).eq("removed", false).gte("date", m).lt("date", nm);
+  var settingsQ = await SB.from("app_settings").select("*");
+  var settings = {}; (settingsQ.data || []).forEach(function (r) { settings[r.key] = r.value; });
+  var mcf = mcfQ.data || [], cm = cmQ.data || [], accts = acctQ.data || [];
+  var row = null;
+  mcf.forEach(function (r) { if (String(r.month).slice(0, 10) === m) row = r; });
+  var income = row ? Number(row.income) : 0, spend = row ? Number(row.spend) : 0;
+  var varSpend = row ? Number(row.variable_spend) : 0, fixSpend = row ? Number(row.fixed_spend) : 0, lumpySpend = row ? Number(row.lumpy_spend) : 0;
+  var varTarget = Number(settings.variable_target || 23000), fixTarget = Number(settings.fixed_target || 22661);
+  var h = "";
+  if (!accts.length) {
+    h += "<div class=card style=text-align:center><div style=font-size:30px>🔗</div><p style=\"margin:8px 0\"><b>No bank connected yet</b></p><p class=muted style=margin-bottom:12px>Connect Chase to start the automatic feed.</p><button class=btn id=connbtn>Connect bank</button></div>";
+  } else {
+    h += "<div class=chips>";
+    accts.forEach(function (a) {
+      var bal = Number(a.current_balance || 0);
+      var col = a.type === "credit" ? "var(--amber)" : "var(--green)";
+      h += "<div class=chip><div class=muted>" + esc(a.name) + (a.mask ? " ••" + esc(a.mask) : "") + "</div><div style=\"font-weight:700;color:" + col + "\">" + fmt2.format(bal) + (a.type === "credit" ? " owed" : "") + "</div></div>";
+    });
+    h += "</div>";
+  }
+  h += "<div class=grid3>";
+  h += "<div class=card><div class=muted>Income</div><div class=big style=color:var(--green)>" + fmt0.format(income) + "</div></div>";
+  h += "<div class=card><div class=muted>Spent</div><div class=big>" + fmt0.format(spend) + "</div></div>";
+  var net = income - spend;
+  h += "<div class=card><div class=muted>Net</div><div class=big style=color:" + (net >= 0 ? "var(--green)" : "var(--red)") + ">" + fmt0.format(net) + "</div></div>";
+  h += "</div>";
+  h += "<div class=card><div class=row><b>Variable spending</b><span>" + fmt0.format(varSpend) + " <span class=muted>/ " + fmt0.format(varTarget) + "</span></span></div>" + barHtml(varSpend, varTarget) + "<p class=muted style=margin-top:6px>Target from your June go-forward budget.</p></div>";
+  h += "<div class=card><div class=row><b>Fixed / committed</b><span>" + fmt0.format(fixSpend) + " <span class=muted>/ " + fmt0.format(fixTarget) + "</span></span></div>" + barHtml(fixSpend, fixTarget) + "</div>";
+  if (lumpySpend > 0) h += "<div class=card><div class=row><b>Lumpy (travel, boat, projects)</b><span>" + fmt0.format(lumpySpend) + "</span></div></div>";
+  var un = unQ.count || 0;
+  if (un > 0) h += "<div class=card style=cursor:pointer id=unchip><div class=row><span>🏷️ <b>" + un + "</b> transactions need a category</span><span class=muted>Review ›</span></div></div>";
+  var watch = ["Apple & gaming", "Food delivery", "Amazon", "Dining out"];
+  h += "<h2>Watchlist</h2>";
+  watch.forEach(function (wn) {
+    var cat = null; state.cats.forEach(function (c) { if (c.name === wn) cat = c; });
+    if (!cat) return;
+    var spent = 0;
+    cm.forEach(function (r) { if (r.category_id === cat.id) spent = Number(r.spent); });
+    h += "<div class=card><div class=row><span>" + (cat.emoji || "") + " " + esc(cat.name) + "</span><span>" + fmt0.format(spent) + (cat.monthly_target ? " <span class=muted>/ " + fmt0.format(cat.monthly_target) + "</span>" : "") + "</span></div>" + barHtml(spent, cat.monthly_target) + "</div>";
+  });
+  var last6 = mcf.slice(-6);
+  if (last6.length > 1) {
+    var mx = 1;
+    last6.forEach(function (r) { mx = Math.max(mx, Number(r.income), Number(r.spend)); });
+    h += "<h2>Trend</h2><div class=card><div style=\"display:flex;gap:8px;align-items:flex-end;height:110px\">";
+    last6.forEach(function (r) {
+      var hi = Math.round(Number(r.income) / mx * 90), hs = Math.round(Number(r.spend) / mx * 90);
+      h += "<div style=\"flex:1;text-align:center\"><div style=\"display:flex;gap:3px;align-items:flex-end;justify-content:center;height:92px\"><div style=\"width:38%;height:" + hi + "px;background:var(--green);border-radius:4px 4px 0 0;opacity:.85\"></div><div style=\"width:38%;height:" + hs + "px;background:var(--red);border-radius:4px 4px 0 0;opacity:.85\"></div></div><div class=muted style=font-size:10px>" + monthLabel(String(r.month).slice(0, 10)).slice(0, 3) + "</div></div>";
+    });
+    h += "</div><p class=muted style=margin-top:6px><span style=color:var(--green)>■</span> income&nbsp;&nbsp;<span style=color:var(--red)>■</span> spend</p></div>";
+  }
+  v.innerHTML = h;
+  var cb = el("connbtn"); if (cb) cb.addEventListener("click", connectBank);
+  var uc = el("unchip"); if (uc) uc.addEventListener("click", function () { state.tab = "activity"; state.txCat = "0"; render(); });
+}
+
+// ---------- activity ----------
+async function renderActivity() {
+  var v = el("view");
+  var opts = "<option value=''>All categories</option><option value='0'" + (state.txCat === "0" ? " selected" : "") + ">Uncategorized</option>";
+  state.cats.forEach(function (c) { opts += "<option value='" + c.id + "'" + (String(state.txCat) === String(c.id) ? " selected" : "") + ">" + (c.emoji || "") + " " + esc(c.name) + "</option>"; });
+  v.innerHTML = "<div class=row style=margin-bottom:10px><input id=txq placeholder=Search value=\"" + esc(state.txSearch) + "\"><select id=txcat style=max-width:46%>" + opts + "</select></div><div class=card id=txlist><p class=muted>Loading...</p></div><div style=text-align:center><button class=\"btn sec\" id=txmore>Load more</button></div>";
+  el("txq").addEventListener("change", function () { state.txSearch = el("txq").value.trim(); state.txPage = 0; loadTxns(true); });
+  el("txcat").addEventListener("change", function () { state.txCat = el("txcat").value; state.txPage = 0; loadTxns(true); });
+  el("txmore").addEventListener("click", function () { state.txPage++; loadTxns(false); });
+  state.txPage = 0;
+  loadTxns(true);
+}
+async function loadTxns(reset) {
+  var m = state.month, nm = shiftMonth(state.month, 1);
+  var q = SB.from("transactions").select("id,date,name,merchant_name,amount,pending,category_id,note").eq("removed", false).gte("date", m).lt("date", nm).order("date", { ascending: false }).order("id").range(state.txPage * 100, state.txPage * 100 + 99);
+  if (state.txCat === "0") q = q.is("category_id", null);
+  else if (state.txCat) q = q.eq("category_id", parseInt(state.txCat, 10));
+  if (state.txSearch) q = q.or("name.ilike.%" + state.txSearch + "%,merchant_name.ilike.%" + state.txSearch + "%");
+  var r = await q;
+  var rows = r.data || [];
+  if (reset) state.txns = rows; else state.txns = state.txns.concat(rows);
+  var h = "";
+  if (!state.txns.length) h = "<p class=muted>No transactions here.</p>";
+  state.txns.forEach(function (t, i) {
+    var cat = catById(t.category_id);
+    var inn = t.amount < 0;
+    h += "<div class=txn data-i=" + i + "><div><div class=nm>" + esc(t.merchant_name || t.name) + (t.pending ? " <span class=muted>(pending)</span>" : "") + "</div><div class=catchip>" + esc(t.date) + " · " + (cat ? (cat.emoji || "") + " " + esc(cat.name) : "🏷️ tap to categorize") + "</div></div><div class=\"amt" + (inn ? " in" : "") + "\">" + (inn ? "+" : "") + fmt2.format(Math.abs(t.amount)) + "</div></div>";
+  });
+  el("txlist").innerHTML = h;
+  el("txmore").style.display = rows.length === 100 ? "inline-block" : "none";
+  document.querySelectorAll(".txn").forEach(function (node) {
+    node.addEventListener("click", function () { openTxnModal(state.txns[parseInt(node.getAttribute("data-i"), 10)]); });
+  });
+}
+function openTxnModal(t) {
+  var h = "<h1 style=margin-bottom:4px>" + esc(t.merchant_name || t.name) + "</h1><p class=muted>" + esc(t.date) + " · " + fmt2.format(Math.abs(t.amount)) + "</p><div class=spacer></div>";
+  h += "<label class=muted style=\"display:flex;gap:8px;align-items:center;margin-bottom:10px\"><input type=checkbox id=alw style=width:auto> Always file <b>" + esc(t.merchant_name || t.name) + "</b> this way</label>";
+  state.cats.forEach(function (c) {
+    h += "<button class=catbtn data-cid=" + c.id + ">" + (c.emoji || "") + " " + esc(c.name) + "</button>";
+  });
+  openModal(h);
+  document.querySelectorAll(".catbtn").forEach(function (b) {
+    b.addEventListener("click", async function () {
+      var cid = parseInt(b.getAttribute("data-cid"), 10);
+      var always = el("alw").checked;
+      try {
+        await SB.from("transactions").update({ category_id: cid, category_source: "manual" }).eq("id", t.id);
+        if (always) {
+          var pat = (t.merchant_name || t.name || "").trim();
+          if (pat.length > 2) {
+            await SB.from("category_rules").insert({ pattern: pat, category_id: cid, priority: 50 });
+            await SB.from("transactions").update({ category_id: cid, category_source: "rule" }).ilike("name", "%" + pat + "%").neq("category_source", "manual");
+            await SB.from("transactions").update({ category_id: cid, category_source: "rule" }).ilike("merchant_name", "%" + pat + "%").neq("category_source", "manual");
+          }
+        }
+        closeModal(); toast("Filed ✓"); loadTxns(true);
+      } catch (e) { toast("Error: " + e.message); }
+    });
+  });
+}
+
+// ---------- budget ----------
+async function renderBudget() {
+  var v = el("view");
+  v.innerHTML = "<p class=muted>Loading...</p>";
+  var m = state.month;
+  var yr = m.slice(0, 4);
+  var cmQ = await SB.from("category_month").select("*").eq("month", m);
+  var ytdQ = await SB.from("category_month").select("*").gte("month", yr + "-01-01").lte("month", yr + "-12-01");
+  var goalsQ = await SB.from("goals").select("*").order("id");
+  var cm = {}; (cmQ.data || []).forEach(function (r) { cm[r.category_id] = Number(r.spent); });
+  var ytd = {}; (ytdQ.data || []).forEach(function (r) { ytd[r.category_id] = (ytd[r.category_id] || 0) + Number(r.spent); });
+  var h = "";
+  function section(bucket, label, useEnvelope) {
+    h += "<h2>" + label + "</h2>";
+    state.cats.filter(function (c) { return c.bucket === bucket; }).forEach(function (c) {
+      var spent = useEnvelope ? (ytd[c.id] || 0) : (cm[c.id] || 0);
+      var target = useEnvelope ? c.annual_envelope : c.monthly_target;
+      h += "<div class=card><div class=row><span>" + (c.emoji || "") + " " + esc(c.name) + "</span><span>" + fmt0.format(spent) + " <span class=\"muted target-edit\" data-cid=" + c.id + " data-env=" + (useEnvelope ? 1 : 0) + " style=cursor:pointer>/ " + (target ? fmt0.format(target) : "set target") + (useEnvelope ? "/yr" : "") + " ✏️</span></span></div>" + barHtml(spent, target) + "</div>";
+    });
+  }
+  section("variable", "Variable — this month", false);
+  section("fixed", "Fixed — this month", false);
+  section("lumpy", "Annual envelopes — " + yr + " so far", true);
+  h += "<h2>Savings goals</h2>";
+  (goalsQ.data || []).forEach(function (g) {
+    h += "<div class=card><div class=row><span>" + esc(g.name) + "</span><span>" + fmt0.format(g.saved_amount) + " <span class=muted>/ " + fmt0.format(g.target_amount) + "</span> <button class=\"btn sec sm goal-add\" data-gid=" + g.id + ">+</button></span></div>" + barHtml(Number(g.saved_amount), Number(g.target_amount)) + "</div>";
+  });
+  h += "<button class=\"btn sec\" id=addgoal>+ Add goal</button>";
+  v.innerHTML = h;
+  document.querySelectorAll(".target-edit").forEach(function (n) {
+    n.addEventListener("click", async function () {
+      var cid = parseInt(n.getAttribute("data-cid"), 10);
+      var isEnv = n.getAttribute("data-env") === "1";
+      var val = prompt(isEnv ? "Annual envelope amount ($):" : "Monthly target ($):");
+      if (val === null || val === "") return;
+      var num = parseFloat(val.replace("$", "").split(",").join(""));
+      if (isNaN(num)) { toast("Not a number"); return; }
+      var upd = isEnv ? { annual_envelope: num } : { monthly_target: num };
+      await SB.from("categories").update(upd).eq("id", cid);
+      var c2 = await SB.from("categories").select("*").order("sort"); state.cats = c2.data || [];
+      renderBudget();
+    });
+  });
+  document.querySelectorAll(".goal-add").forEach(function (n) {
+    n.addEventListener("click", async function () {
+      var amt = parseFloat(prompt("Add how much to this goal ($)?") || "");
+      if (isNaN(amt)) return;
+      var gid = parseInt(n.getAttribute("data-gid"), 10);
+      var g = (goalsQ.data || []).filter(function (x) { return x.id === gid; })[0];
+      await SB.from("goals").update({ saved_amount: Number(g.saved_amount) + amt }).eq("id", gid);
+      renderBudget();
+    });
+  });
+  el("addgoal").addEventListener("click", async function () {
+    var name = prompt("Goal name (e.g. Emergency fund):");
+    if (!name) return;
+    var target = parseFloat(prompt("Target amount ($):") || "");
+    if (isNaN(target)) return;
+    await SB.from("goals").insert({ name: name, target_amount: target });
+    renderBudget();
+  });
+}
+
+// ---------- subs ----------
+async function renderSubs() {
+  var v = el("view");
+  v.innerHTML = "<p class=muted>Scanning for recurring charges...</p>";
+  var recQ = await SB.from("recurring_candidates").select("*");
+  var ovQ = await SB.from("recurring_overrides").select("*");
+  var ov = {}; (ovQ.data || []).forEach(function (o) { ov[o.merchant_key] = o; });
+  var cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 45);
+  var cut = cutoff.getFullYear() + "-" + pad2(cutoff.getMonth() + 1) + "-" + pad2(cutoff.getDate());
+  var rows = (recQ.data || []).filter(function (r) { return r.last_date >= cut; });
+  rows.sort(function (a, b) { return b.avg_amount - a.avg_amount; });
+  var active = rows.filter(function (r) { return !ov[r.merchant_key] || ov[r.merchant_key].is_subscription !== false; });
+  var hidden = rows.filter(function (r) { return ov[r.merchant_key] && ov[r.merchant_key].is_subscription === false; });
+  var totMo = 0; active.forEach(function (r) { totMo += Number(r.avg_amount); });
+  var h = "<div class=card><div class=muted>Active recurring charges</div><div class=big>" + fmt2.format(totMo) + "/mo</div><div class=muted>≈ " + fmt0.format(totMo * 12) + " per year · target from June review: $550/mo</div></div>";
+  active.forEach(function (r) {
+    h += "<div class=card><div class=row><div><div style=font-weight:600>" + esc(r.merchant_key) + "</div><div class=muted>" + r.charge_count + " charges · " + r.months_hit + " months · last " + esc(r.last_date) + "</div></div><div style=text-align:right><div class=amt>" + fmt2.format(r.avg_amount) + "/mo</div><button class=\"btn sec sm notsub\" data-k=\"" + esc(r.merchant_key) + "\">not a sub</button></div></div></div>";
+  });
+  if (!active.length) h += "<p class=muted>Nothing recurring detected yet — needs about 3 months of history.</p>";
+  if (hidden.length) {
+    h += "<p style=\"margin:10px 0\"><a href=# id=togglehidden>" + (state.subsShowHidden ? "Hide" : "Show") + " " + hidden.length + " dismissed</a></p>";
+    if (state.subsShowHidden) hidden.forEach(function (r) {
+      h += "<div class=card style=opacity:.55><div class=row><span>" + esc(r.merchant_key) + "</span><button class=\"btn sec sm resub\" data-k=\"" + esc(r.merchant_key) + "\">restore</button></div></div>";
+    });
+  }
+  v.innerHTML = h;
+  document.querySelectorAll(".notsub").forEach(function (n) {
+    n.addEventListener("click", async function () { await SB.from("recurring_overrides").upsert({ merchant_key: n.getAttribute("data-k"), is_subscription: false }); renderSubs(); });
+  });
+  document.querySelectorAll(".resub").forEach(function (n) {
+    n.addEventListener("click", async function () { await SB.from("recurring_overrides").delete().eq("merchant_key", n.getAttribute("data-k")); renderSubs(); });
+  });
+  var th = el("togglehidden");
+  if (th) th.addEventListener("click", function (e) { e.preventDefault(); state.subsShowHidden = !state.subsShowHidden; renderSubs(); });
+}
+
+// ---------- settings ----------
+async function renderSettings() {
+  var v = el("view");
+  v.innerHTML = "<p class=muted>Loading...</p>";
+  var conns = [];
+  try { conns = (await api("connections")).connections; } catch (e) { /* not fatal */ }
+  var famQ = await SB.from("family_members").select("*");
+  var user = (await SB.auth.getUser()).data.user;
+  var h = "<h2>Bank connections</h2>";
+  conns.forEach(function (c) {
+    var st = c.status === "ok" ? "<span style=color:var(--green)>● healthy</span>" : (c.status === "reauth_needed" ? "<span style=color:var(--amber)>● needs re-login</span>" : "<span style=color:var(--red)>● error</span>");
+    h += "<div class=card><div class=row><div><b>" + esc(c.institution_name || "Bank") + "</b> " + (c.env === "sandbox" ? "<span class=muted>(test)</span>" : "") + "<div class=muted>" + st + " · last sync " + (c.last_synced_at ? new Date(c.last_synced_at).toLocaleString() : "never") + "</div></div><button class=\"btn danger sm rmconn\" data-id=\"" + c.id + "\">remove</button></div></div>";
+  });
+  if (!conns.length) h += "<p class=muted style=margin-bottom:8px>No banks connected yet.</p>";
+  h += "<div class=row style=\"margin:8px 0 4px\"><button class=btn id=connbtn2>+ Connect bank</button><button class=\"btn sec\" id=syncnow>Sync now</button></div>";
+  h += "<h2>Family members</h2>";
+  (famQ.data || []).forEach(function (f) {
+    h += "<div class=card><div class=row><span>👤 " + esc(f.display_name) + "</span><span class=muted>" + esc(f.email) + "</span></div></div>";
+  });
+  h += "<button class=\"btn sec\" id=addmember>+ Add family member</button>";
+  h += "<h2>Security</h2><div class=card><p class=muted style=margin-bottom:8px>Signed in as " + esc(user ? user.email : "") + "</p><input id=npw type=password placeholder=\"New password (8+ characters)\"><div class=spacer></div><div class=row><button class=\"btn sec\" id=chpw>Change password</button><button class=\"btn sec\" id=signout>Sign out</button></div></div>";
+  h += "<p class=muted style=margin-top:14px>Bank access is read-only. Unlink anytime at chase.com → Security &amp; privacy → Linked apps.</p>";
+  v.innerHTML = h;
+  el("connbtn2").addEventListener("click", connectBank);
+  el("syncnow").addEventListener("click", async function () {
+    toast("Syncing all banks...");
+    try { var r = await api("sync_now", {}); var tot = 0; (r.results || []).forEach(function (x) { tot += (x.added || 0) + (x.modified || 0); }); toast("Sync done — " + tot + " updates."); renderSettings(); }
+    catch (e) { toast("Sync error: " + e.message); }
+  });
+  document.querySelectorAll(".rmconn").forEach(function (n) {
+    n.addEventListener("click", async function () {
+      if (!confirm("Remove this bank connection and its transactions?")) return;
+      try { await api("remove_item", { item_id: n.getAttribute("data-id"), purge: true }); toast("Removed."); renderSettings(); }
+      catch (e) { toast("Error: " + e.message); }
+    });
+  });
+  el("addmember").addEventListener("click", async function () {
+    var email = prompt("New member email:"); if (!email) return;
+    var name = prompt("Their first name:") || email.split("@")[0];
+    try {
+      var r = await api("invite_member", { email: email, name: name });
+      openModal("<h1>Member added</h1><p style=\"margin:10px 0\">Give them these sign-in details:</p><div class=card><p><b>Email:</b> " + esc(r.email) + "</p><p><b>Temporary password:</b> <span class=mono>" + esc(r.temp_password) + "</span></p></div><p class=muted>They can change it in Settings after signing in. This password is only shown once.</p>");
+      renderSettings();
+    } catch (e) { toast("Error: " + e.message); }
+  });
+  el("chpw").addEventListener("click", async function () {
+    var p = el("npw").value;
+    if (!p || p.length < 8) { toast("Use at least 8 characters."); return; }
+    var r = await SB.auth.updateUser({ password: p });
+    if (r.error) toast("Error: " + r.error.message); else { el("npw").value = ""; toast("Password changed ✓"); }
+  });
+  el("signout").addEventListener("click", async function () { await SB.auth.signOut(); boot(); });
+}
+
+boot();
+</script>
+</body>
+</html>
