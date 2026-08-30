@@ -3,44 +3,50 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5f6f8">
 <title>Bruce Family Finance</title>
 <style>
-:root { --bg:#0f1217; --card:#171c24; --line:#232a35; --text:#e5e9f0; --muted:#8a94a6; --green:#4ade80; --amber:#fbbf24; --red:#f87171; --blue:#60a5fa; }
+:root { --bg:#f5f6f8; --card:#ffffff; --line:#e4e8ee; --text:#1a2330; --muted:#68758a; --green:#15803d; --greenbar:#22c55e; --amber:#b45309; --amberbar:#f59e0b; --red:#dc2626; --blue:#2563eb; --track:#edf0f4; }
 * { box-sizing:border-box; margin:0; padding:0; }
 body { background:var(--bg); color:var(--text); font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding-bottom:76px; }
 .wrap { max-width:860px; margin:0 auto; padding:14px; }
-header.top { position:sticky; top:0; background:rgba(15,18,23,.92); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); z-index:5; }
+header.top { position:sticky; top:0; background:rgba(245,246,248,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); z-index:5; }
 header.top .wrap { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; }
 h1 { font-size:17px; font-weight:700; }
-h2 { font-size:14px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.06em; margin:18px 0 8px; }
-.card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:10px; }
+h2 { font-size:13px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin:18px 0 8px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:10px; box-shadow:0 1px 2px rgba(16,24,40,.04); }
 .row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
 .muted { color:var(--muted); font-size:12px; }
 .big { font-size:22px; font-weight:700; }
 .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-.bar { height:8px; background:#0c0f14; border-radius:5px; overflow:hidden; margin-top:6px; }
+.bar { height:8px; background:var(--track); border-radius:5px; overflow:hidden; margin-top:6px; }
 .bar i { display:block; height:100%; border-radius:5px; }
-.chips { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; }
-.chip { flex:0 0 auto; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:8px 12px; font-size:12px; }
-nav.tabs { position:fixed; bottom:0; left:0; right:0; background:#12161d; border-top:1px solid var(--line); display:flex; z-index:9; padding-bottom:env(safe-area-inset-bottom); }
+.chips { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:8px; margin-bottom:10px; }
+.chip { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:8px 10px; font-size:12px; box-shadow:0 1px 2px rgba(16,24,40,.04); }
+nav.tabs { position:fixed; bottom:0; left:0; right:0; background:#ffffff; border-top:1px solid var(--line); display:flex; z-index:9; padding-bottom:env(safe-area-inset-bottom); }
 nav.tabs button { flex:1; background:none; border:none; color:var(--muted); font-size:11px; padding:9px 0 7px; cursor:pointer; }
-nav.tabs button.on { color:var(--green); }
+nav.tabs button.on { color:var(--green); font-weight:700; }
 nav.tabs .ico { font-size:19px; display:block; margin-bottom:2px; }
-button.btn { background:var(--green); color:#08220f; font-weight:700; border:none; border-radius:10px; padding:11px 16px; font-size:14px; cursor:pointer; }
-button.btn.sec { background:#242c38; color:var(--text); font-weight:600; }
-button.btn.danger { background:#3a1d1d; color:var(--red); }
+button.btn { background:#16a34a; color:#ffffff; font-weight:700; border:none; border-radius:10px; padding:11px 16px; font-size:14px; cursor:pointer; }
+button.btn.sec { background:#eef1f5; color:var(--text); font-weight:600; }
+button.btn.danger { background:#fdecec; color:var(--red); }
 button.btn.sm { padding:7px 11px; font-size:12px; border-radius:8px; }
-input, select { background:#0c0f14; border:1px solid var(--line); color:var(--text); border-radius:10px; padding:11px 12px; font-size:15px; width:100%; }
+input, select { background:#ffffff; border:1px solid var(--line); color:var(--text); border-radius:10px; padding:11px 12px; font-size:15px; width:100%; }
+.seg { display:flex; background:#eef1f5; border-radius:10px; padding:3px; margin-bottom:10px; }
+.seg button { flex:1; border:none; background:none; color:var(--muted); font-size:13px; font-weight:600; padding:8px 0; border-radius:8px; cursor:pointer; }
+.seg button.on { background:#ffffff; color:var(--text); box-shadow:0 1px 2px rgba(16,24,40,.08); }
 .txn { display:flex; justify-content:space-between; align-items:center; padding:10px 2px; border-bottom:1px solid var(--line); cursor:pointer; gap:8px; }
 .txn:last-child { border-bottom:none; }
 .txn .nm { font-size:14px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:52vw; }
 .amt { font-weight:700; font-size:14px; white-space:nowrap; }
 .amt.in { color:var(--green); }
 .catchip { font-size:11px; color:var(--muted); }
-#modalbg { position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; z-index:20; }
-#modal { position:fixed; left:50%; bottom:0; transform:translateX(-50%); width:100%; max-width:560px; max-height:82vh; overflow-y:auto; background:#141922; border:1px solid var(--line); border-radius:18px 18px 0 0; padding:18px; display:none; z-index:21; }
-#toast { position:fixed; top:14px; left:50%; transform:translateX(-50%); background:#242c38; border:1px solid var(--line); color:var(--text); border-radius:12px; padding:10px 16px; font-size:13px; display:none; z-index:30; max-width:90vw; }
-.catbtn { display:flex; width:100%; text-align:left; background:#0c0f14; border:1px solid var(--line); color:var(--text); border-radius:10px; padding:11px 12px; margin-bottom:6px; font-size:14px; cursor:pointer; align-items:center; gap:8px; }
+.catrow { display:flex; justify-content:space-between; align-items:center; padding:11px 2px; border-bottom:1px solid var(--line); cursor:pointer; gap:8px; }
+.catrow:last-child { border-bottom:none; }
+#modalbg { position:fixed; inset:0; background:rgba(15,23,42,.35); display:none; z-index:20; }
+#modal { position:fixed; left:50%; bottom:0; transform:translateX(-50%); width:100%; max-width:560px; max-height:82vh; overflow-y:auto; background:#ffffff; border:1px solid var(--line); border-radius:18px 18px 0 0; padding:18px; display:none; z-index:21; }
+#toast { position:fixed; top:14px; left:50%; transform:translateX(-50%); background:#1f2937; color:#ffffff; border-radius:12px; padding:10px 16px; font-size:13px; display:none; z-index:30; max-width:90vw; }
+.catbtn { display:flex; width:100%; text-align:left; background:#f7f8fa; border:1px solid var(--line); color:var(--text); border-radius:10px; padding:11px 12px; margin-bottom:6px; font-size:14px; cursor:pointer; align-items:center; gap:8px; }
 .login-box { max-width:380px; margin:12vh auto 0; }
 .spacer { height:10px; }
 a { color:var(--blue); }
@@ -91,7 +97,7 @@ var SB = createClient(SB_URL, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJz
 var API_URL = SB_URL + "/functions/v1/api";
 var fmt0 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 var fmt2 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
-var state = { tab: "home", month: curMonth(), cats: [], txSearch: "", txCat: "", txPage: 0, txns: [], subsShowHidden: false };
+var state = { tab: "home", month: curMonth(), cats: [], txMode: "cats", txSearch: "", txCat: "", txPage: 0, txns: [], subsShowFreq: false, subsShowHidden: false };
 
 function el(id) { return document.getElementById(id); }
 function esc(s) { var d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; }
@@ -106,7 +112,7 @@ el("modalbg").addEventListener("click", closeModal);
 function barHtml(spent, target) {
   if (!target) return "";
   var p = Math.min(100, Math.round(spent / target * 100));
-  var c = p <= 80 ? "var(--green)" : (p <= 100 ? "var(--amber)" : "var(--red)");
+  var c = p <= 80 ? "var(--greenbar)" : (p <= 100 ? "var(--amberbar)" : "var(--red)");
   if (spent > target) c = "var(--red)";
   return "<div class=bar><i style=\"width:" + p + "%;background:" + c + "\"></i></div>";
 }
@@ -205,7 +211,7 @@ async function renderHome() {
   v.innerHTML = "<p class=muted>Loading...</p>";
   var mcfQ = await SB.from("monthly_cash_flow").select("*").order("month");
   var cmQ = await SB.from("category_month").select("*").eq("month", m);
-  var acctQ = await SB.from("accounts").select("*").eq("hidden", false);
+  var acctQ = await SB.from("accounts").select("*").eq("hidden", false).order("type").order("current_balance", { ascending: false });
   var unQ = await SB.from("transactions").select("id", { count: "exact", head: true }).is("category_id", null).eq("removed", false).gte("date", m).lt("date", nm);
   var settingsQ = await SB.from("app_settings").select("*");
   var settings = {}; (settingsQ.data || []).forEach(function (r) { settings[r.key] = r.value; });
@@ -223,7 +229,7 @@ async function renderHome() {
     accts.forEach(function (a) {
       var bal = Number(a.current_balance || 0);
       var col = a.type === "credit" ? "var(--amber)" : "var(--green)";
-      h += "<div class=chip><div class=muted>" + esc(a.name) + (a.mask ? " ••" + esc(a.mask) : "") + "</div><div style=\"font-weight:700;color:" + col + "\">" + fmt2.format(bal) + (a.type === "credit" ? " owed" : "") + "</div></div>";
+      h += "<div class=chip><div class=muted style=\"white-space:nowrap;overflow:hidden;text-overflow:ellipsis\">" + esc(a.name) + (a.mask ? " ••" + esc(a.mask) : "") + "</div><div style=\"font-weight:700;color:" + col + "\">" + fmt2.format(bal) + (a.type === "credit" ? " owed" : "") + "</div></div>";
     });
     h += "</div>";
   }
@@ -254,26 +260,59 @@ async function renderHome() {
     h += "<h2>Trend</h2><div class=card><div style=\"display:flex;gap:8px;align-items:flex-end;height:110px\">";
     last6.forEach(function (r) {
       var hi = Math.round(Number(r.income) / mx * 90), hs = Math.round(Number(r.spend) / mx * 90);
-      h += "<div style=\"flex:1;text-align:center\"><div style=\"display:flex;gap:3px;align-items:flex-end;justify-content:center;height:92px\"><div style=\"width:38%;height:" + hi + "px;background:var(--green);border-radius:4px 4px 0 0;opacity:.85\"></div><div style=\"width:38%;height:" + hs + "px;background:var(--red);border-radius:4px 4px 0 0;opacity:.85\"></div></div><div class=muted style=font-size:10px>" + monthLabel(String(r.month).slice(0, 10)).slice(0, 3) + "</div></div>";
+      h += "<div style=\"flex:1;text-align:center\"><div style=\"display:flex;gap:3px;align-items:flex-end;justify-content:center;height:92px\"><div style=\"width:38%;height:" + hi + "px;background:var(--greenbar);border-radius:4px 4px 0 0\"></div><div style=\"width:38%;height:" + hs + "px;background:#f87171;border-radius:4px 4px 0 0\"></div></div><div class=muted style=font-size:10px>" + monthLabel(String(r.month).slice(0, 10)).slice(0, 3) + "</div></div>";
     });
-    h += "</div><p class=muted style=margin-top:6px><span style=color:var(--green)>■</span> income&nbsp;&nbsp;<span style=color:var(--red)>■</span> spend</p></div>";
+    h += "</div><p class=muted style=margin-top:6px><span style=color:var(--greenbar)>■</span> income&nbsp;&nbsp;<span style=color:#f87171>■</span> spend</p></div>";
   }
   v.innerHTML = h;
   var cb = el("connbtn"); if (cb) cb.addEventListener("click", connectBank);
-  var uc = el("unchip"); if (uc) uc.addEventListener("click", function () { state.tab = "activity"; state.txCat = "0"; render(); });
+  var uc = el("unchip"); if (uc) uc.addEventListener("click", function () { state.tab = "activity"; state.txMode = "list"; state.txCat = "0"; render(); });
 }
 
 // ---------- activity ----------
 async function renderActivity() {
   var v = el("view");
+  var segHtml = "<div class=seg><button id=segcats class=\"" + (state.txMode === "cats" ? "on" : "") + "\">Categories</button><button id=seglist class=\"" + (state.txMode === "list" ? "on" : "") + "\">All transactions</button></div>";
+  if (state.txMode === "cats") {
+    v.innerHTML = segHtml + "<div class=card id=catlist><p class=muted>Loading...</p></div>";
+    bindSeg();
+    var cmQ = await SB.from("category_month").select("*").eq("month", state.month);
+    var rows = (cmQ.data || []).filter(function (r) { return Math.abs(Number(r.spent)) > 0.004 && r.txns > 0; });
+    rows.sort(function (a, b) { return Math.abs(Number(b.spent)) - Math.abs(Number(a.spent)); });
+    var h = "";
+    rows.forEach(function (r) {
+      var cat = catById(r.category_id);
+      var emoji = cat ? (cat.emoji || "") : "🏷️";
+      var name = r.category;
+      var val = Number(r.spent);
+      var isIncome = r.bucket === "income";
+      var amt = isIncome ? "+" + fmt0.format(-val) : fmt0.format(val);
+      h += "<div class=catrow data-cid=\"" + r.category_id + "\"><div><span style=margin-right:6px>" + emoji + "</span><b>" + esc(name) + "</b><span class=muted style=margin-left:8px>" + r.txns + " txns</span></div><span class=amt style=\"" + (isIncome ? "color:var(--green)" : "") + "\">" + amt + "</span></div>";
+    });
+    if (!h) h = "<p class=muted>Nothing in " + monthLabel(state.month) + " yet.</p>";
+    el("catlist").innerHTML = h;
+    document.querySelectorAll(".catrow").forEach(function (n) {
+      n.addEventListener("click", function () {
+        state.txCat = n.getAttribute("data-cid");
+        state.txMode = "list"; state.txPage = 0;
+        renderActivity();
+      });
+    });
+    return;
+  }
   var opts = "<option value=''>All categories</option><option value='0'" + (state.txCat === "0" ? " selected" : "") + ">Uncategorized</option>";
   state.cats.forEach(function (c) { opts += "<option value='" + c.id + "'" + (String(state.txCat) === String(c.id) ? " selected" : "") + ">" + (c.emoji || "") + " " + esc(c.name) + "</option>"; });
-  v.innerHTML = "<div class=row style=margin-bottom:10px><input id=txq placeholder=Search value=\"" + esc(state.txSearch) + "\"><select id=txcat style=max-width:46%>" + opts + "</select></div><div class=card id=txlist><p class=muted>Loading...</p></div><div style=text-align:center><button class=\"btn sec\" id=txmore>Load more</button></div>";
+  v.innerHTML = segHtml + "<div class=row style=margin-bottom:10px><input id=txq placeholder=Search value=\"" + esc(state.txSearch) + "\"><select id=txcat style=max-width:46%>" + opts + "</select></div><div class=card id=txlist><p class=muted>Loading...</p></div><div style=text-align:center><button class=\"btn sec\" id=txmore>Load more</button></div>";
+  bindSeg();
   el("txq").addEventListener("change", function () { state.txSearch = el("txq").value.trim(); state.txPage = 0; loadTxns(true); });
   el("txcat").addEventListener("change", function () { state.txCat = el("txcat").value; state.txPage = 0; loadTxns(true); });
   el("txmore").addEventListener("click", function () { state.txPage++; loadTxns(false); });
   state.txPage = 0;
   loadTxns(true);
+}
+function bindSeg() {
+  el("segcats").addEventListener("click", function () { state.txMode = "cats"; state.txCat = ""; renderActivity(); });
+  el("seglist").addEventListener("click", function () { state.txMode = "list"; renderActivity(); });
 }
 async function loadTxns(reset) {
   var m = state.month, nm = shiftMonth(state.month, 1);
@@ -398,21 +437,27 @@ async function renderSubs() {
   var cut = cutoff.getFullYear() + "-" + pad2(cutoff.getMonth() + 1) + "-" + pad2(cutoff.getDate());
   var rows = (recQ.data || []).filter(function (r) { return r.last_date >= cut; });
   rows.sort(function (a, b) { return b.avg_amount - a.avg_amount; });
-  var active = rows.filter(function (r) { return !ov[r.merchant_key] || ov[r.merchant_key].is_subscription !== false; });
   var hidden = rows.filter(function (r) { return ov[r.merchant_key] && ov[r.merchant_key].is_subscription === false; });
-  var totMo = 0; active.forEach(function (r) { totMo += Number(r.avg_amount); });
-  var h = "<div class=card><div class=muted>Active recurring charges</div><div class=big>" + fmt2.format(totMo) + "/mo</div><div class=muted>≈ " + fmt0.format(totMo * 12) + " per year · target from June review: $550/mo</div></div>";
-  active.forEach(function (r) {
-    h += "<div class=card><div class=row><div><div style=font-weight:600>" + esc(r.merchant_key) + "</div><div class=muted>" + r.charge_count + " charges · " + r.months_hit + " months · last " + esc(r.last_date) + "</div></div><div style=text-align:right><div class=amt>" + fmt2.format(r.avg_amount) + "/mo</div><button class=\"btn sec sm notsub\" data-k=\"" + esc(r.merchant_key) + "\">not a sub</button></div></div></div>";
-  });
-  if (!active.length) h += "<p class=muted>Nothing recurring detected yet — needs about 3 months of history.</p>";
+  var visible = rows.filter(function (r) { return !ov[r.merchant_key] || ov[r.merchant_key].is_subscription !== false; });
+  var subs = visible.filter(function (r) { return r.consistent; });
+  var freq = visible.filter(function (r) { return !r.consistent; });
+  var totMo = 0; subs.forEach(function (r) { totMo += Number(r.avg_amount); });
+  function subCard(r, dismissable) {
+    return "<div class=card><div class=row><div><div style=font-weight:600>" + esc(r.merchant_key) + "</div><div class=muted>" + r.charge_count + " charges · " + r.months_hit + " months · last " + esc(r.last_date) + "</div></div><div style=text-align:right><div class=amt>" + fmt2.format(r.avg_amount) + "/mo</div>" + (dismissable ? "<button class=\"btn sec sm notsub\" data-k=\"" + esc(r.merchant_key) + "\">not a sub</button>" : "") + "</div></div></div>";
+  }
+  var h = "<div class=card><div class=muted>Likely subscriptions (consistent monthly charges)</div><div class=big>" + fmt2.format(totMo) + "/mo</div><div class=muted>≈ " + fmt0.format(totMo * 12) + " per year · June target: $550/mo</div></div>";
+  subs.forEach(function (r) { h += subCard(r, true); });
+  if (!subs.length) h += "<p class=muted>No consistent recurring charges found yet.</p>";
+  h += "<h2 style=\"cursor:pointer\" id=freqtoggle>Frequent merchants (" + freq.length + ") " + (state.subsShowFreq ? "▾" : "▸") + "</h2>";
+  if (state.subsShowFreq) freq.forEach(function (r) { h += subCard(r, true); });
   if (hidden.length) {
     h += "<p style=\"margin:10px 0\"><a href=# id=togglehidden>" + (state.subsShowHidden ? "Hide" : "Show") + " " + hidden.length + " dismissed</a></p>";
     if (state.subsShowHidden) hidden.forEach(function (r) {
-      h += "<div class=card style=opacity:.55><div class=row><span>" + esc(r.merchant_key) + "</span><button class=\"btn sec sm resub\" data-k=\"" + esc(r.merchant_key) + "\">restore</button></div></div>";
+      h += "<div class=card style=opacity:.6><div class=row><span>" + esc(r.merchant_key) + "</span><button class=\"btn sec sm resub\" data-k=\"" + esc(r.merchant_key) + "\">restore</button></div></div>";
     });
   }
   v.innerHTML = h;
+  el("freqtoggle").addEventListener("click", function () { state.subsShowFreq = !state.subsShowFreq; renderSubs(); });
   document.querySelectorAll(".notsub").forEach(function (n) {
     n.addEventListener("click", async function () { await SB.from("recurring_overrides").upsert({ merchant_key: n.getAttribute("data-k"), is_subscription: false }); renderSubs(); });
   });
